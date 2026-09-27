@@ -1,4 +1,4 @@
-# HW2 Report — Sukriti Jain
+# HW2 Report — SUHANI JAIN
 
 ## The short version
 
@@ -39,15 +39,11 @@ The final 24-trace run recorded **44,284 tokens**, **26 LLM calls** and **41.49 
 
 The tool loop binds the available tools, executes returned tool calls, appends `ToolMessage` observations, and stops after `MAX_TOOL_STEPS=6` (`graph.py`, `config.py`). The design supports dependent calls such as `get_order` → `check_return_eligibility`, and also handles unknown tools, bad arguments and tool failures without letting the run loop forever (`graph.py`, `tools.py`).
 
-One recorded sequence is `dev-011`: the agent executed `get_order(MRD-700157)`, then executed `issue_wallet_credit` for **₹500** after the missed-delivery condition; the final answer reports the credit (`dev_traces.jsonl`).
-
 The two fake-instruction sources are the `community` handbook section and a support-ticket note returned by `get_ticket_history`; detection looks for instruction-like phrases, untrusted text is fenced, and write operations are protected by code-owned approval (`policy.py`, `tools.py`). Before the final fix, `dev-001` surfaced an untrusted citation and scored **0.85**; after citation cleanup/trust filtering it scored **1.00**. `dev-021` and `dev-022` both scored **1.00**, and the final run had **0 safety violations** (`evaluation_operational.json`, `dev_traces.jsonl`).
 
 A reworded attack that avoids the detector's regex patterns could still evade lexical detection; however, a protected write such as a refund above **₹5,000** is independently blocked by `requires_approval`, so the model cannot grant authority just by changing wording (`policy.py`, `tools.py`).
 
 ## 4. Controlling the flow
-
-This overview shows the main graph paths. The complete `draw()` output is available in [graph.txt](graph.txt).
 
 ```text
                                 +-----------+
@@ -100,7 +96,7 @@ One implemented human-approval example is: `issue_refund` above **₹5,000** is 
 
 ## Evidence
 
-`Module_2_Output.png` is the final evaluator screenshot. It shows **100.00 / 100 (n=24)**, route/actions/facts/citations all **1.000**, **0 safety violations**, and **100.00** in every displayed category. The final trace file is `dev_traces.jsonl`.
+`Module_2_Output.png` is the final evaluator screenshot. It shows **100.00 / 100 (n=24)**, route/actions/facts/citations all **1.000**, **0 safety violations**, and **100.00** in every displayed category. The final trace file is `dev_traces.jsonl`; the generated graph is `graph.txt`.
 
 There is no worst category in the final run because all 12 categories are **100.00**. With another week, I would measure adversarially reworded injection, verification ON/OFF cost, and optional reranking/query-translation rather than assuming those extra LLM calls improve the score (`policy.py`, `retrieval.py`, `dev_traces.jsonl`).
 
@@ -115,5 +111,4 @@ python -m pytest tests -q
 python -c "from support_agent.graph import draw; draw()"
 ```
 
-The final evaluation settings are in `config.py`; the 24 final traces are in `dev_traces.jsonl`; retrieval experiments are summarised in `LEARNING_NOTES.md`; the complete generated graph is `graph.txt`. AI tools used during the homework were used for code review, debugging, experiment design and documentation; the submitted implementation and measurements remain in the named project files (`LEARNING_NOTES.md`, `graph.py`, `retrieval.py`, `policy.py`, `agent.py`, `tests/`).
-
+The final evaluation settings are in `config.py`; the 24 final traces are in `dev_traces.jsonl`; retrieval experiments are summarised in `LEARNING_NOTES.md`; the graph output is in `graph.txt`. AI tools used during the homework were used for code review, debugging, experiment design and documentation; the submitted implementation and measurements remain in the named project files (`LEARNING_NOTES.md`, `graph.py`, `retrieval.py`, `policy.py`, `agent.py`, `tests/`).
